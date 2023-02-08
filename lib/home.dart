@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,6 +7,7 @@ import 'amiibo_info.dart';
 import 'event_bus.dart';
 import 'icon_grid.dart';
 import 'selective_list.dart';
+import 'setting.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -121,14 +120,17 @@ class HomePageState extends State<HomePage> {
   Future<void> _fetchAmiibo() async {
     final appDocPath = await getApplicationDocumentsDirectory();
     _database =
-    await openDatabase(join(appDocPath.path, "PM3-Amiibo/amiibo.db"));
+        await openDatabase(join(appDocPath.path, "PM3-Amiibo/amiibo.db"));
 
-    String sql = 'SELECT * FROM "amiibos" WHERE "id" is ' + _selectedAmiibo!.toString();
+    String sql =
+        'SELECT * FROM "amiibos" WHERE "id" is ' + _selectedAmiibo!.toString();
 
     var result = await _database!.rawQuery(sql);
     _displayAmiibo = result[0];
 
-    sql = 'SELECT * FROM "usages" WHERE "amiibo" is "' + _displayAmiibo!["name"] + '"';
+    sql = 'SELECT * FROM "usages" WHERE "amiibo" is "' +
+        _displayAmiibo!["name"] +
+        '"';
 
     _displayUsage = await _database!.rawQuery(sql);
 
@@ -171,6 +173,36 @@ class HomePageState extends State<HomePage> {
           onPressed: () {},
         ),
         actions: [
+          IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(
+                          20.0,
+                        ),
+                      ),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 20,
+                    ),
+                    title: Text(
+                      "Settings and Note",
+                      style: TextStyle(
+                        fontSize: 25,
+                      ),
+                    ),
+                    content: Setting(),
+                  );
+                },
+              );
+            },
+            icon: Icon(Icons.settings),
+          ),
           PopupMenuButton(
             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
               PopupMenuItem(
@@ -238,7 +270,8 @@ class HomePageState extends State<HomePage> {
                 const SizedBox(width: 20),
                 ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: 300),
-                  child: AmiiboInfo(contents: _displayAmiibo!, usage: _displayUsage!),
+                  child: AmiiboInfo(
+                      contents: _displayAmiibo!, usage: _displayUsage!),
                 ),
                 const SizedBox(width: 20),
               ],
