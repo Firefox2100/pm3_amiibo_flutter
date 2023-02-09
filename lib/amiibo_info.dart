@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pm3_amiibo_flutter/functions.dart';
 
 class AmiiboInfo extends StatefulWidget {
   const AmiiboInfo({super.key, required this.contents, required this.usage});
@@ -14,14 +15,14 @@ class AmiiboInfo extends StatefulWidget {
 }
 
 class AmiiboInfoState extends State<AmiiboInfo> {
-  String? _dumpPath;
-
-  Future<void> _getDumpPath() async {
+  Future<String> _getDumpPath() async {
     final data = widget.contents;
 
     final appDocPath = await getApplicationDocumentsDirectory();
-    _dumpPath = join(appDocPath.path, "PM3-Amiibo",
+    String dumpPath = join(appDocPath.path, "PM3-Amiibo",
         data["head"] + "-" + data["tail"] + ".bin");
+
+    return dumpPath;
   }
 
   @override
@@ -60,7 +61,7 @@ class AmiiboInfoState extends State<AmiiboInfo> {
           fit: BoxFit.fitWidth,
         ),
         SizedBox.fromSize(
-          size: Size(50, 30),
+          size: const Size(50, 30),
         ),
         ConstrainedBox(
           constraints: BoxConstraints(maxHeight: height - 550),
@@ -71,7 +72,7 @@ class AmiiboInfoState extends State<AmiiboInfo> {
           ),
         ),
         SizedBox.fromSize(
-          size: Size(50, 15),
+          size: const Size(50, 15),
         ),
         SizedBox(
           height: 188,
@@ -85,7 +86,7 @@ class AmiiboInfoState extends State<AmiiboInfo> {
               ),
             ),
             overlayOpacity: 0.6,
-            overlayColor: Color(0xFFF1F1F1),
+            overlayColor: const Color(0xFFF1F1F1),
             overlayWholeScreen: false,
             child: Container(
               decoration: BoxDecoration(
@@ -103,7 +104,7 @@ class AmiiboInfoState extends State<AmiiboInfo> {
                   )
                 ],
               ),
-              padding: EdgeInsets.symmetric(
+              padding: const EdgeInsets.symmetric(
                 vertical: 15,
                 horizontal: 20,
               ),
@@ -119,31 +120,60 @@ class AmiiboInfoState extends State<AmiiboInfo> {
                     ),
                     onPressed: () async {
                       context.loaderOverlay.show();
-                      await Future.delayed(Duration(seconds: 2));
+                      final dumpPath = await _getDumpPath();
+                      try {
+                        await pm3.emulate(dumpPath);
+                      }
+                      catch(e) {
+                        if (!context.mounted) return;
+                        showErrorDialog(context, e);
+                      }
                       context.loaderOverlay.hide();
                     },
                     child: const Text("Emulate"),
                   ),
                   SizedBox.fromSize(
-                    size: Size(50, 30),
+                    size: const Size(50, 30),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepOrangeAccent,
                       minimumSize: const Size(double.infinity, 40),
                     ),
-                    onPressed: () {},
+                    onPressed: () async {
+                      context.loaderOverlay.show();
+                      final dumpPath = await _getDumpPath();
+                      try {
+                        await pm3.randomizeUID(dumpPath);
+                      }
+                      catch(e) {
+                        if (!context.mounted) return;
+                        showErrorDialog(context, e);
+                      }
+                      context.loaderOverlay.hide();
+                    },
                     child: const Text("Randomize UID"),
                   ),
                   SizedBox.fromSize(
-                    size: Size(50, 30),
+                    size: const Size(50, 30),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepOrangeAccent,
                       minimumSize: const Size(double.infinity, 40),
                     ),
-                    onPressed: () {},
+                    onPressed: () async {
+                      context.loaderOverlay.show();
+                      final dumpPath = await _getDumpPath();
+                      try {
+                        await pm3.writeBack(dumpPath);
+                      }
+                      catch(e) {
+                        if (!context.mounted) return;
+                        showErrorDialog(context, e);
+                      }
+                      context.loaderOverlay.hide();
+                    },
                     child: const Text("Write back"),
                   ),
                 ],

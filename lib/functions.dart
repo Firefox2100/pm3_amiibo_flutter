@@ -1,8 +1,37 @@
 import 'dart:io';
-import 'dart:convert';
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter/material.dart';
+
+Future<void> showErrorDialog(BuildContext context, dynamic e) async {
+  await showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(
+              20.0,
+            ),
+          ),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 20,
+        ),
+        title: const Text(
+          "Error",
+          style: TextStyle(
+            fontSize: 25,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Text(e.toString()),
+        ),
+      );
+    },
+  );
+}
 
 class Proxmark3 {
   String? port;
@@ -36,20 +65,18 @@ class Proxmark3 {
     process!.stdin.writeln("hf mfu eload -f " + path);
     process!.stdin.writeln("hf mfu sim -t 7");
 
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 5));
   }
 
-  Future<void> writeBack(String path, String name) async{
+  Future<void> writeBack(String path) async{
     if (!initialized) {
       throw Exception("Instance is not initialized");
     }
 
-    process!.stdin.writeln("hf mfu esave -f " + path);
-    await Future.delayed(Duration(seconds: 3));
+    process!.stdin.writeln("hf mfu esave -f temp");
+    await Future.delayed(const Duration(seconds: 5));
 
-    final appDocDir = await getApplicationDocumentsDirectory();
-
-    await File(path).rename(join(appDocDir.path, name));
+    await File(join(pm3Path!, "temp.bin")).rename(path);
   }
 
   Future<void> randomizeUID(String path) async {

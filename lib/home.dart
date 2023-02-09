@@ -75,7 +75,10 @@ class HomePageState extends State<HomePage> {
 
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey("pm3_port")) {
-      await pm3.init();
+      try {
+        await pm3.init();
+      }
+      catch(e) {}
     }
 
     setState(() {
@@ -185,7 +188,7 @@ class HomePageState extends State<HomePage> {
               showDialog(
                 context: context,
                 builder: (context) {
-                  return AlertDialog(
+                  return const AlertDialog(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(
                         Radius.circular(
@@ -210,7 +213,7 @@ class HomePageState extends State<HomePage> {
                 },
               );
             },
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
           ),
           PopupMenuButton(
             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
@@ -268,7 +271,7 @@ class HomePageState extends State<HomePage> {
               children: [
                 const SizedBox(width: 20),
                 ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 300),
+                  constraints: const BoxConstraints(maxWidth: 300),
                   child: SelectiveList(contents: _displayList!),
                 ),
                 const SizedBox(width: 20),
@@ -278,7 +281,7 @@ class HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(width: 20),
                 ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 300),
+                  constraints: const BoxConstraints(maxWidth: 300),
                   child: AmiiboInfo(
                       contents: _displayAmiibo!, usage: _displayUsage!),
                 ),

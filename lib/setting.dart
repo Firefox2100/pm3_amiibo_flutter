@@ -100,7 +100,12 @@ class SettingState extends State<Setting> {
               await prefs.setString('pm3_path', _proxmarkPath.text);
               await prefs.setString('pm3_port', _proxmarkPort.text);
 
-              await pm3.init();
+              try {
+                await pm3.init();
+              } catch (e) {
+                if (!context.mounted) return;
+                showErrorDialog(context, e);
+              }
             },
             child: const Text(
               "Save",
