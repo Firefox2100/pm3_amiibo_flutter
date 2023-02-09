@@ -43,6 +43,8 @@ dependencies:
   event_bus:
   path:
   shared_preferences:
+  loader_overlay: ^2.1.0
+  loading_overlay: ^0.3.0
 
 dev_dependencies:
   flutter_test:

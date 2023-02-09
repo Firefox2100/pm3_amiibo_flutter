@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -39,7 +40,8 @@ class AmiiboInfoState extends State<AmiiboInfo> {
     info += "Usages:\n";
 
     for (var item in usage) {
-      String temp = item["platform"] + " game " + item["game"] + ": " + item["usage"];
+      String temp =
+          item["platform"] + " game " + item["game"] + ": " + item["usage"];
       temp += ". Write back: ";
       temp += item["write"] == 1 ? "True" : "False";
       temp += "\n";
@@ -61,9 +63,7 @@ class AmiiboInfoState extends State<AmiiboInfo> {
           size: Size(50, 30),
         ),
         ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: height - 550
-          ),
+          constraints: BoxConstraints(maxHeight: height - 550),
           child: Expanded(
             child: SingleChildScrollView(
               child: Text(info),
@@ -71,37 +71,85 @@ class AmiiboInfoState extends State<AmiiboInfo> {
           ),
         ),
         SizedBox.fromSize(
-          size: Size(50, 30),
+          size: Size(50, 15),
         ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.deepOrangeAccent,
-            minimumSize: const Size(double.infinity, 40),
+        SizedBox(
+          height: 188,
+          child: LoaderOverlay(
+            useDefaultLoading: false,
+            overlayWidget: Center(
+              child: Image.asset(
+                "assets/loading.gif",
+                width: 250,
+                height: 150,
+              ),
+            ),
+            overlayOpacity: 0.6,
+            overlayColor: Color(0xFFF1F1F1),
+            overlayWholeScreen: false,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  width: 1,
+                  color: Colors.blueGrey,
+                ),
+                color: Colors.white30,
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 20,
+                    offset: Offset(0, 10),
+                  )
+                ],
+              ),
+              padding: EdgeInsets.symmetric(
+                vertical: 15,
+                horizontal: 20,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrangeAccent,
+                      minimumSize: const Size(double.infinity, 40),
+                    ),
+                    onPressed: () async {
+                      context.loaderOverlay.show();
+                      await Future.delayed(Duration(seconds: 2));
+                      context.loaderOverlay.hide();
+                    },
+                    child: const Text("Emulate"),
+                  ),
+                  SizedBox.fromSize(
+                    size: Size(50, 30),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrangeAccent,
+                      minimumSize: const Size(double.infinity, 40),
+                    ),
+                    onPressed: () {},
+                    child: const Text("Randomize UID"),
+                  ),
+                  SizedBox.fromSize(
+                    size: Size(50, 30),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrangeAccent,
+                      minimumSize: const Size(double.infinity, 40),
+                    ),
+                    onPressed: () {},
+                    child: const Text("Write back"),
+                  ),
+                ],
+              ),
+            ),
           ),
-          onPressed: () {},
-          child: const Text("Emulate"),
-        ),
-        SizedBox.fromSize(
-          size: Size(50, 30),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.deepOrangeAccent,
-            minimumSize: const Size(double.infinity, 40),
-          ),
-          onPressed: () {},
-          child: const Text("Randomize UID"),
-        ),
-        SizedBox.fromSize(
-          size: Size(50, 30),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.deepOrangeAccent,
-            minimumSize: const Size(double.infinity, 40),
-          ),
-          onPressed: () {},
-          child: const Text("Write back"),
         ),
       ],
     );

@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'amiibo_info.dart';
 import 'event_bus.dart';
 import 'icon_grid.dart';
 import 'selective_list.dart';
 import 'setting.dart';
+import 'functions.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -70,6 +72,11 @@ class HomePageState extends State<HomePage> {
 
     _selectedAmiibo = 0;
     await _fetchAmiibo();
+
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey("pm3_port")) {
+      await pm3.init();
+    }
 
     setState(() {
       _isLoaded = true;
@@ -196,7 +203,9 @@ class HomePageState extends State<HomePage> {
                         fontSize: 25,
                       ),
                     ),
-                    content: Setting(),
+                    content: SingleChildScrollView(
+                      child: Setting(),
+                    ),
                   );
                 },
               );

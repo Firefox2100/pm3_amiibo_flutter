@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '';
+import 'package:pm3_amiibo_flutter/functions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Setting extends StatefulWidget {
   const Setting({super.key});
@@ -9,7 +10,8 @@ class Setting extends StatefulWidget {
 }
 
 class SettingState extends State<Setting> {
-  TextEditingController _proxmarkPath = TextEditingController();
+  final TextEditingController _proxmarkPath = TextEditingController();
+  final TextEditingController _proxmarkPort = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,7 @@ class SettingState extends State<Setting> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Padding(
+        const Padding(
           padding: EdgeInsets.symmetric(
             horizontal: 25,
             vertical: 40,
@@ -46,7 +48,7 @@ class SettingState extends State<Setting> {
             ],
           ),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -65,7 +67,21 @@ class SettingState extends State<Setting> {
                     hintStyle: TextStyle(color: Colors.grey),
                   ),
                 ),
-                SizedBox(
+                const Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 10,
+                  ),
+                  child: Text("Proxmark3 Port"),
+                ),
+                TextField(
+                  controller: _proxmarkPort,
+                  textInputAction: TextInputAction.next,
+                  decoration: const InputDecoration(
+                    hintText: "Proxmark3 Port",
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
+                ),
+                const SizedBox(
                   height: 40,
                   width: 50,
                 ),
@@ -73,14 +89,20 @@ class SettingState extends State<Setting> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 40,
           width: 50,
         ),
         Center(
           child: ElevatedButton(
-            onPressed: () {},
-            child: Text(
+            onPressed: () async {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setString('pm3_path', _proxmarkPath.text);
+              await prefs.setString('pm3_port', _proxmarkPort.text);
+
+              await pm3.init();
+            },
+            child: const Text(
               "Save",
               style: TextStyle(
                 fontSize: 20,
